@@ -38,7 +38,7 @@ I(t)cosωt+Q(t)sinωt
 
 For signal receiver, the version 3 RTL-SDR radio receiver dongle will be used, which samples a radio frequency signal from 50 MHz to 1700MHz and outputs interleaved 8-bit IQ samples at s symbol rate up to 2.4Msps.
 
-~~## 3. List of project documents~~
+## ~~3. List of project documents~~
 
 
 ## 4. AD9854 Direct Digital Synthesiser
