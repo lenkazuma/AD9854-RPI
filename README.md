@@ -15,16 +15,11 @@
 | Week 11, 14 Oct - 20 Oct, 2018        |                                                                           |
 | Week 12, 21 Oct - 27 Oct, 2018        |                                                                           |
 
-## Contact
-
-| Name                  | Email                     |
-| :---:                 | ---                       |
-| Zhenzhen Liu          | u5625456@anu.edu.au       |
 
 ## Table Of Contents
 1. [Welcome](#1-welcome)
 2. [Project Description](#2-project-description)
-3. [Project Documents](#2-project-documents)
+~~3. [Project Documents](#2-project-documents)~~
 4. [AD9854 DDS](#3-Transmitter)
 5. [RTL-SDR](#4-Receiver)
 
@@ -43,12 +38,12 @@ I(t)cosωt+Q(t)sinωt
 
 For signal receiver, the version 3 RTL-SDR radio receiver dongle will be used, which samples a radio frequency signal from 50 MHz to 1700MHz and outputs interleaved 8-bit IQ samples at s symbol rate up to 2.4Msps.
 
-## 3. List of project documents 
-1. [Individual Project Contract](Project Documents/U5625456_Zhenzhen_Liu_Contract.pdf)
-2. [Context Document](Project Documents/U5625456_ZHENZHEN_LIU_ENGN4200_Context_Document.pdf)
-3. [Midterm Report](Project Documents/Midterm/U5625456_Zhenzhen_Liu_ENGN4200_Midterm_Review.pdf)
-4. [Thesis Poster](Project Documents/Poster/U5625456_Zhenzhen_Liu_Engn4200_thesis_poster.pdf)
-5. [Thesis]
+~~## 3. List of project documents~~
+~~1. [Individual Project Contract](Project Documents/U5625456_Zhenzhen_Liu_Contract.pdf)~~
+~~2. [Context Document](Project Documents/U5625456_ZHENZHEN_LIU_ENGN4200_Context_Document.pdf)~~
+~~3. [Midterm Report](Project Documents/Midterm/U5625456_Zhenzhen_Liu_ENGN4200_Midterm_Review.pdf)~~
+~~4. [Thesis Poster](Project Documents/Poster/U5625456_Zhenzhen_Liu_Engn4200_thesis_poster.pdf)~~
+~~5. [Thesis]~~
 
 
 ## 4. AD9854 Direct Digital Synthesiser
