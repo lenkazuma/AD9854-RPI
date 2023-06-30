@@ -19,7 +19,7 @@
 ## Table Of Contents
 1. [Welcome](#1-welcome)
 2. [Project Description](#2-project-description)
-~~3. [Project Documents](#2-project-documents)~~
+3. ~~[Project Documents](#2-project-documents)~~
 4. [AD9854 DDS](#3-Transmitter)
 5. [RTL-SDR](#4-Receiver)
 
