@@ -1,0 +1,178 @@
+\documentclass[a4paper,12pt]{report}
+
+% import packages
+\usepackage{anuthesis}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[australian]{babel}
+\usepackage{fontenc}
+\usepackage{graphicx}
+
+\usepackage{comment}
+\usepackage{mathrsfs}
+\usepackage{booktabs}
+%\usepackage[dvips]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage{subfig}
+\usepackage{appendix}
+\usepackage[bw,numbered]{mcode}
+\usepackage[nottoc,numbib]{tocbibind}
+\usepackage[round, sort, numbers, authoryear]{natbib} % for author yr referencing
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%             Margins
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[top=30mm, bottom=30mm ,left=30mm, right=30mm]{geometry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Setting page header format
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{fancyplain}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}{}}
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername\ \thechapter\ #1}{}}
+\fancyhf{}
+\lhead{\fancyplain{}{\leftmark}}
+\rhead{\fancyplain{}{\rightmark}}
+\rfoot{\textbf{\thepage}}
+
+\makeatletter
+\def\listoffigures{
+\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+ \fi\chapter*{List of Figures\@mkboth{List of Figures}{List of Figures}}
+ \@starttoc{lof}\if@restonecol\twocolumn\fi
+ }
+\makeatother
+
+% fix citations to be IEEE style
+\def\citepunct{], [}
+\def\citedash{]--[}
+% Bibliographical style, IEEEtran for IEEE, natbib for Harvard
+\bibliographystyle{anuthesis}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%             Authorship
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\THETITLE{Low cost DDS based Transceiver for Wireless Communication of low VHF}
+\title{\THETITLE}
+\def\THEAUTHOR{Zhenzhen Liu}
+\author{\THEAUTHOR}
+\def\studentID{U5625456}
+\def\supervisor{Prof. Gerard Gorg}
+\date{\today}
+
+\begin{document}
+  \setcounter{secnumdepth}{5}
+  \setcounter{tocdepth}{7}
+  \linespread{1.2}
+  \selectfont
+  \pagenumbering{roman}  % first use Roman numerals for page numbers
+  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %         Title Page
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{titlepage}
+    %\enlargethispage{2cm}
+    \vspace*{\fill}
+    \begin{center}
+
+      \makeatletter
+      \Huge\textbf{\THETITLE} \\[1.5cm]
+      \huge\textbf{\THEAUTHOR\ \\ \studentID} \\[1.5cm]
+      \Large\textbf{Supervised by \supervisor} \\[1.5cm]
+      \thismonth
+      \makeatother
+      
+      \vspace*{\fill}
+      \includegraphics[width=70mm]{images/logo} \\[2cm]
+      \vspace*{-1.5cm}
+      \Large A thesis submitted in part fulfilment of the degree of \\[0.5cm]
+      \LARGE Bachelor of Engineering\\
+      The Department of Engineering\\
+      Australian National University \\ [0.8cm]      
+    \end{center}
+    \vspace*{\fill}
+  \end{titlepage}
+
+  % include statements effectively insert the contents of the named file.
+  % They are not necessary, but are useful for organising your work.
+  % They always start a  new page.
+  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %         Plagerism
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \include{plagerismstatement}
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %       Acknowledgements
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \include{thanks}  % include the contents of the file thanks.tex
+  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %         Abstract
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \include{abstract}  % include the file abstract.tex
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %      Contents Page
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \selectfont
+  \tableofcontents
+  %\thispagestyle{empty} % no fancyhdr in the contents page
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %      List of Figures
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \listoffigures % makes a list of figures
+  \addcontentsline{toc}{chapter}{List of Figures}
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %      List of Tables
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \listoftables  % uncomment this if you have tables
+  \addcontentsline{toc}{chapter}{List of Tables}
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %      Abbreviations
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \selectfont
+  \include{abbreviations}
+
+  % Change settings for for Thesis body
+  \pagenumbering{arabic} % switch to Arabic numerals for page numbers
+  \setcounter{page}{1}  % set page number to 1
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %      Thesis Body
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \include{chapter1}  % include the file chapter1.tex
+  \include{chapter2}
+  \include{chapter3}
+  \include{chapter4}
+  \include{chapter5}
+  \include{chapter6}
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %      Appendix
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \appendix
+  \renewcommand{\chaptermark}[1]{\markboth{Appendix \thechapter\ #1}{}}
+  \include{appendix1}
+  \include{appendix2}
+  
+  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %      Bibliography
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \renewcommand{\bibsection}{}
+  \chapter*{Bibliography}
+  \addcontentsline{toc}{chapter}{Bibliography}
+  \bibliography{bibliography/bibliography}{}
+
+
+\end{document}
