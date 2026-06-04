@@ -1,8 +1,8 @@
-
+#include <stdio.h>
+#include <stdint.h>
 #include <wiringPi.h>
 
 #include "ad9854.h"
-
 
 //**********************System Clock Variables**************************
 
@@ -94,10 +94,11 @@ uchar FreqWord[6];      //6 bytes freq control
     digitalWrite(AD9854_UCLK, HIGH); \
     digitalWrite(AD9854_UCLK, LOW)
  
-static void AD9854_IO_Init(void)
+static int AD9854_IO_Init(void)
 {
-    // Setup Wiring Pi.
-    wiringPiSetup();
+    if (wiringPiSetup() == -1) {
+        return -1;
+    }
     // Setup Port DDR.
     pinMode(AD9854_WR,   OUTPUT);
     pinMode(AD9854_RD,   OUTPUT);
@@ -119,6 +120,23 @@ static void AD9854_IO_Init(void)
     pinMode(AD9854_DATA2, OUTPUT);
     pinMode(AD9854_DATA1, OUTPUT);
     pinMode(AD9854_DATA0, OUTPUT);
+    return 0;
+}
+
+static void AD9854_WriteFreqWord(uchar address)
+{
+    uchar count;
+    for (count = 6; count > 0; ) {
+        AD9854_WR_Byte(address++, FreqWord[--count]);
+    }
+}
+
+static void AD9854_WriteShape(uint shape)
+{
+    AD9854_WR_Byte(0x21, shape >> 8);
+    AD9854_WR_Byte(0x22, (uchar)(shape & 0xff));
+    AD9854_WR_Byte(0x23, shape >> 8);
+    AD9854_WR_Byte(0x24, (uchar)(shape & 0xff));
 }
 
 static void AD9854_WR_Byte(_uint32 address, _uint32 data)
@@ -147,64 +165,39 @@ static void AD9854_WR_Byte(_uint32 address, _uint32 data)
 //====================================================================================
 //void Freq_convert(long Freq)
 //====================================================================================
-static void FreqConvert(long freq)   
+static void FreqConvert(long freq)
 {
-    ulong FreqBuf;
-    ulong Temp=Freq_mult_ulong;              
+    uint64_t word = (uint64_t)(unsigned long)freq * (uint64_t)Freq_mult_ulong;
 
-    uchar Array_Freq[4];      
-    Array_Freq[0]=(uchar) freq;
-    Array_Freq[1]=(uchar)(freq>>8);
-    Array_Freq[2]=(uchar)(freq>>16);
-    Array_Freq[3]=(uchar)(freq>>24);
-
-    FreqBuf=Temp*Array_Freq[0];                  
-    FreqWord[0]=FreqBuf;    
-    FreqBuf>>=8;
-
-    FreqBuf+=(Temp*Array_Freq[1]);
-    FreqWord[1]=FreqBuf;
-    FreqBuf>>=8;
-
-    FreqBuf+=(Temp*Array_Freq[2]);
-    FreqWord[2]=FreqBuf;
-    FreqBuf>>=8;
-
-    FreqBuf+=(Temp*Array_Freq[3]);
-    FreqWord[3]=FreqBuf;
-    FreqBuf>>=8;
-
-    FreqWord[4]=FreqBuf;
-    FreqWord[5]=FreqBuf>>8;            
+    FreqWord[0] = (uchar)word;
+    FreqWord[1] = (uchar)(word >> 8);
+    FreqWord[2] = (uchar)(word >> 16);
+    FreqWord[3] = (uchar)(word >> 24);
+    FreqWord[4] = (uchar)(word >> 32);
+    FreqWord[5] = (uchar)(word >> 40);
 }
 
 //====================================================================================
 //void Freq_doublt_convert(double Freq)
 //====================================================================================
-static void FreqDoubleConvert(double freq)   
+static void FreqDoubleConvert(double freq)
 {
-    ulong Low32;
-    uint  High16;
-    double Temp=Freq_mult_double;
-    freq*=(double)(Temp);
-    //1 0000 0000 0000 0000 0000 0000 0000 0000 = 4294967295
-    //2^32 = 4294967295
-    High16 =(int)(freq/4294967295);
-    freq -= (double)High16*4294967295;
-    Low32 = (ulong)freq;
-    //Set the 6 FreqWord to write in Addr
-    FreqWord[0]=Low32;
-    FreqWord[1]=Low32>>8;
-    FreqWord[2]=Low32>>16;
-    FreqWord[3]=Low32>>24;
-    FreqWord[4]=High16;
-    FreqWord[5]=High16>>8;
+    uint64_t word = (uint64_t)(freq * Freq_mult_double);
+
+    FreqWord[0] = (uchar)word;
+    FreqWord[1] = (uchar)(word >> 8);
+    FreqWord[2] = (uchar)(word >> 16);
+    FreqWord[3] = (uchar)(word >> 24);
+    FreqWord[4] = (uchar)(word >> 32);
+    FreqWord[5] = (uchar)(word >> 40);
 }
 
-static void AD9854_Initialized(_uint32 sysMode)
+static int AD9854_Initialized(_uint32 sysMode)
 {
-    // Initialized I/O.
-    AD9854_IO_Init();
+    if (AD9854_IO_Init() != 0) {
+        fprintf(stderr, "AD9854: wiringPiSetup() failed (run as root on Raspberry Pi?)\n");
+        return -1;
+    }
     // Disable R/W control port
     digitalWrite(AD9854_WR, HIGH);
     digitalWrite(AD9854_RD, HIGH);
@@ -220,42 +213,26 @@ static void AD9854_Initialized(_uint32 sysMode)
     AD9854_WR_Byte(0x20, 0x60);         //Cancel the interpolation compensation
     // Update output.
     AD9854_UDCLK();
+    return 0;
 }
 
-/*
- * Name       :
- * Desciption :
- * Input      :
- * Output     :
- */
 void AD9854_Init(void)
 {
-    // Set system mode to 0, update by external.
     AD9854_Initialized(0x00);
 }
 
-/*
- * Name       :
- * Desciption :
- * Input      :
- * Output     :
- */
 void AD9854_InitFSK(void)
 {
-    // Set system mode to 1, update by external.
-    AD9854_Initialized(0x02);
+    if (AD9854_Initialized(0x02) == 0) {
+        pinMode(AD9854_FSK, INPUT);
+    }
 }
 
-/*
- * Name       :
- * Desciption :
- * Input      :
- * Output     :
- */
 void AD9854_InitBPSK(void)
 {
-    // Set system mode to 4, update by external.
-    AD9854_Initialized(0x08);
+    if (AD9854_Initialized(0x08) == 0) {
+        pinMode(AD9854_FSK, INPUT);
+    }
 }
 
 /*
@@ -266,24 +243,9 @@ void AD9854_InitBPSK(void)
  */
 void AD9854_SetSine(ulong freq, uint shape)
 {
-    uchar count;
-    //Select the initial address
-    uchar address = 0x04;
-    
-    // Convert the frequency.
     FreqConvert(freq);
-    // Write the frequency to AD9854.
-    for(count=6; count>0; )
-    {
-        AD9854_WR_Byte(address++, FreqWord[--count]);
-    }
-    // Set I channel amplitude
-    AD9854_WR_Byte(0x21, shape>>8);
-    AD9854_WR_Byte(0x22, (uchar)(shape & 0xff));
-    // Set Q channel amplitude
-    AD9854_WR_Byte(0x23, shape>>8);
-    AD9854_WR_Byte(0x24, (uchar)(shape & 0xff));
-    // Update output.
+    AD9854_WriteFreqWord(0x04);
+    AD9854_WriteShape(shape);
     AD9854_UDCLK();
 }
 
@@ -295,24 +257,9 @@ void AD9854_SetSine(ulong freq, uint shape)
  */
 void AD9854_SetSine_double(double freq, uint shape)
 {
-    uchar count;
-    //Select the initial address
-    uchar address = 0x04;
-    
-    // Convert the frequency.
     FreqDoubleConvert(freq);
-    // Write the frequency to AD9854.
-    for(count=6; count>0; )
-    {
-        AD9854_WR_Byte(address++, FreqWord[--count]);
-    }
-    // Set I channel amplitude
-    AD9854_WR_Byte(0x21, shape>>8);
-    AD9854_WR_Byte(0x22, (uchar)(shape & 0xff));
-    // Set Q channel amplitude
-    AD9854_WR_Byte(0x23, shape>>8);
-    AD9854_WR_Byte(0x24, (uchar)(shape & 0xff));
-    // Update output.
+    AD9854_WriteFreqWord(0x04);
+    AD9854_WriteShape(shape);
     AD9854_UDCLK();
 }
 
@@ -324,31 +271,24 @@ void AD9854_SetSine_double(double freq, uint shape)
  */
 void AD9854_SetFSK(ulong Freq1,ulong Freq2)
 {
-    uchar count=6;
-    // Set the freq initial address
-    uchar address1=0x04, address2=0x0a;
-    // Set the shape, 12-bit, range 0~4095
-    const uint shape=4000;
-    // Convert the frequency 1
+    const uint shape = 4000;
+
     FreqConvert(Freq1);
-    // Write the frequency 1.
-    for(count=6; count>0; )
-    {
-        AD9854_WR_Byte(address1++, FreqWord[--count]);
-    }
-    // Convert the frequency 2
+    AD9854_WriteFreqWord(0x04);
     FreqConvert(Freq2);
-    // Write the frequency 2.
-    for(count=6; count>0; )
-    {
-        AD9854_WR_Byte(address2++, FreqWord[--count]);
-    }
-    // Set I channel amplitude
-    AD9854_WR_Byte(0x21, shape>>8);
-    AD9854_WR_Byte(0x22, (uchar)(shape & 0xff));
-    // Set Q channel amplitude
-    AD9854_WR_Byte(0x23, shape>>8);
-    AD9854_WR_Byte(0x24, (uchar)(shape & 0xff));
-    // Update output.
+    AD9854_WriteFreqWord(0x0a);
+    AD9854_WriteShape(shape);
+    AD9854_UDCLK();
+}
+
+void AD9854_SetBPSK(uint phase1, uint phase2)
+{
+    phase1 &= 0x3fff;
+    phase2 &= 0x3fff;
+
+    AD9854_WR_Byte(0x00, (uchar)(phase1 >> 8));
+    AD9854_WR_Byte(0x01, (uchar)(phase1 & 0xff));
+    AD9854_WR_Byte(0x02, (uchar)(phase2 >> 8));
+    AD9854_WR_Byte(0x03, (uchar)(phase2 & 0xff));
     AD9854_UDCLK();
 }

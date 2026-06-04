@@ -44,5 +44,25 @@ For signal receiver, the version 3 RTL-SDR radio receiver dongle will be used, w
 ## 4. AD9854 Direct Digital Synthesiser
 [Work repository](AD9854)
 
+### Build (Raspberry Pi)
+
+Requires [WiringPi](https://github.com/WiringPi/WiringPi) and root (or gpio group) for GPIO access.
+
+```bash
+cd AD9854
+make
+sudo ./ad9854_test
+```
+
+Default demo outputs **70 MHz** with 20 MHz reference × clock multiplier **12** (240 MHz SYSCLK). Change `CLK_Set` in `ad9854.c` if your board uses a different reference or multiplier.
+
+GPIO map: see [AD9854/Documentation.txt](AD9854/Documentation.txt).
+
+Host-side tuning-word check (no hardware):
+
+```bash
+python3 AD9854/tests/verify_freq_convert.py
+```
+
 ## 5. RTL-SDR radio receiver 
 [Work repository](RTL-SDR)
